@@ -1,0 +1,39 @@
+---
+
+- name: dse-index-files Export DSEFS Tarball
+  copy:
+    src: "{{ DSE_FS_INDEX_FILES_LOCAL }}.zip"
+    dest: "{{ DSE_FS_INDEX_FILES_REMOTE }}.zip"
+  when: 
+    - inventory_hostname == groups[spark_worker_inventory][0]
+
+- name: Create directory to extract dsefs data in pivot
+  file:
+    path: '{{ DSE_FS_INDEX_FILES_REMOTE }}_tmp'
+    state: directory
+  when:  
+    - inventory_hostname == groups[spark_worker_inventory][0]
+
+- name: dse-index-files Extract catalogs in Pivot Server
+  unarchive:
+    src: "{{ DSE_FS_INDEX_FILES_REMOTE }}.zip"
+    dest: "{{ DSE_FS_INDEX_FILES_REMOTE }}_tmp"
+    remote_src: yes
+  when: 
+    - inventory_hostname == groups[spark_worker_inventory][0]
+
+- name: dse-index-files Create DSEFS directory for catalogs file
+  shell: dse -u {{ SPARK_AO_USER_NAME }} -p {{ SPARK_AO_USER_PASS }} fs 'mkdir  -p {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/files'
+  when: 
+    - inventory_hostname == groups[spark_worker_inventory][0]
+
+- name: Grants to DSEFS directory for catalogs file
+  shell: dse -u {{ SPARK_AO_USER_NAME }} -p {{ SPARK_AO_USER_PASS }} fs 'chown -u {{ SPARK_AP_USER_NAME }} {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/files '
+  when: inventory_hostname == groups[spark_worker_inventory][0]
+
+#Beautiful condor
+- name: dse-index-files Export catalogs from PIVOT SERVER INTO DSEFS
+  shell: dse -u {{ SPARK_AO_USER_NAME }} -p {{ SPARK_AO_USER_PASS }} hadoop fs -cp -f file://{{ DSE_FS_INDEX_FILES_REMOTE }}_tmp/{{ NESTED_DIRECTORIES }}/* {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/files
+  when: 
+    - inventory_hostname == groups[spark_worker_inventory][0]
+  register: dsefs_output_dir_catalogs

@@ -1,0 +1,5 @@
+- hosts: "{{spark_worker_inventory}}"
+  user: "{{ ansible_user }}"
+  gather_facts: True
+  roles:
+    - transport-certificate

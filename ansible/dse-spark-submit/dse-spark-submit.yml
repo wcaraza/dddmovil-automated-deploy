@@ -1,0 +1,12 @@
+---
+
+- hosts: "{{ spark_worker_inventory }}"
+  user: "{{ ansible_user }}"
+  gather_facts: True
+  vars_files:
+    - defaults/main.yml
+  roles:
+    - { role: dse-spark-submit-prepare }
+    - { role: dse-index-files, when: INDEX_DSE_FS_FILES == 'true',spark_worker_inventory: spark_worker_inventory }
+    - { role: dse-add-resource-manager, when: RESOURCE_MANAGER == 'true' }
+    - { role: dse-spark-submit }

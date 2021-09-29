@@ -1,0 +1,18 @@
+{  
+   "keyspace":{
+      "replication":{  
+         "strategy":"SimpleStrategy",
+         "datacenters":{  
+            "analytics":{  
+               "name":"AnalyticsDev",
+               "replicationFactor":1
+            },
+            "transactional":{  
+               "name":"TransactionalDev",
+               "replicationFactor":1
+            }
+         }
+      }
+   },
+   "sqldatabase": "BDEU2APPSHCLD01"
+}

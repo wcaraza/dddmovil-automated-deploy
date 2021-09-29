@@ -1,0 +1,17 @@
+#!/bin/bash
+
+REMOTE_PATH="{{ DSE_DATA_MODEL_DEPLOYER_REMOTE_PATH }}/dse-datamodel-deploy-{{ MODEL_TYPE }}/lib/AppCassandraRunner.js"
+ENVIRONMENT="{{ ENVIRONMENT }}"
+SCRIPT_VERSION="{{ SCRIPT_VERSION }}"
+USR="{{ DB_USERNAME }}"
+PWD="{{ DB_PASSWORD }}"
+ACTION="{{ ACTION }}"
+PROJECT="{{PROJECT}}"
+KEY="{{KEY}}"
+CERT="{{CERT}}"
+MODELS_DIRECTORY="{{ datamodel_directory.path }}/src/{{CHANNEL}}/cassandra/"
+CHANNEL="{{CHANNEL}}"
+PROPERTIES="{{ DSE_DATA_MODEL_DEPLOYER_REMOTE_PATH }}/dse-datamodel-deploy-{{ MODEL_TYPE }}/properties-{{ENVIRONMENT}}.json"
+HOSTS={{ DB_HOST }}
+
+node $REMOTE_PATH --env $ENVIRONMENT --v $SCRIPT_VERSION --modelsDirectory $MODELS_DIRECTORY --u $USR --p $PWD --h $HOSTS --project $PROJECT --properties $PROPERTIES --channel $CHANNEL  --action $ACTION --key $KEY --cert $CERT

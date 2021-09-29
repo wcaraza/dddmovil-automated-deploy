@@ -1,0 +1,14 @@
+- name: Create Directory for Scheduler script
+  file:
+    path: "{{ SCHEDULER_DEPLOY_PATH }}"
+    state: directory
+
+- name: Create spark submit resource manager script
+  template:
+    src: dse-spark-submit.j2 
+    dest: "{{ SCHEDULER_DEPLOY_SCRIPT }}"
+
+- name: Launch spark submit task
+  command: sh {{ SCHEDULER_DEPLOY_SCRIPT }}
+  run_once: true
+  when: INMEDIATE_LAUNCH == "true"

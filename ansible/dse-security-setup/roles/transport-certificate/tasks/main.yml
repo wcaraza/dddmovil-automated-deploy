@@ -1,0 +1,34 @@
+---
+- name: Remove Previous version of key-vault certificate path
+  file:
+    path: "{{ DEPLOY_BASE_PATH }}/security/key-vault/{{ APPLICATION_ID }}"
+    state: absent
+  when: "spark_worker_inventory in group_names"
+
+- name: Create directory for key-vault certificate path
+  file:
+    path: "{{ DEPLOY_BASE_PATH }}/security/key-vault/{{ APPLICATION_ID }}"
+    state: directory
+  when: "spark_worker_inventory in group_names"
+
+- name: Transport Keyvault Certificate to spark-servers
+  copy:
+    src: "{{ CERTIFICATE_LOCAL_PATH }}"
+    dest: "{{ DEPLOY_BASE_PATH }}/security/key-vault/{{ APPLICATION_ID }}"
+    force: yes
+  when: "spark_worker_inventory in group_names"
+
+- name: Create security folder
+  file:
+    path: "{{ DEPLOY_BASE_PATH }}/security"
+    state: directory
+  when: "spark_worker_inventory in group_names"
+
+- name: Copy spark client jks
+  copy:
+    src: "{{ item }}"
+    dest: "{{ DEPLOY_BASE_PATH }}/security/"
+  with_items:
+    - "{{ SPARK_CLIENT_JKS_CERT }}"
+    - "{{ SPARK_CLIENT_JKS_KEY }}"
+  when: "spark_worker_inventory in group_names"

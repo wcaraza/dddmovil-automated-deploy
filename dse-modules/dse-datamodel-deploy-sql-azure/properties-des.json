@@ -1,0 +1,18 @@
+{  
+   "keyspace":{
+      "replication":{  
+         "strategy":"NetworkTopologyStrategy",
+         "datacenters":{  
+            "analytics":{  
+               "name":"AnalyticsDev",
+               "replicationFactor":3
+            },
+            "transactional":{  
+               "name":"TransactionalDev",
+               "replicationFactor":3
+            }
+         }
+      }
+   },
+   "sqldatabase": "BDEU2APPSHCLD01"
+}

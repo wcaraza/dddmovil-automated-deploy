@@ -1,0 +1,10 @@
+---
+
+- hosts: "{{ DEPLOY_SCRIPT_INVENTORY }}"
+  user: "{{ ansible_user }}"
+  gather_facts: True
+  vars_files:
+    - defaults/main.yml
+  roles:
+    - { role: dse-add-datamodel-deploy, when: DATAMODEL_DEPLOYER == 'true' }
+    - { role: dse-execute-model }

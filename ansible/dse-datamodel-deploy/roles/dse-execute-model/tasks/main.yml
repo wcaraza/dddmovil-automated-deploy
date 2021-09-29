@@ -1,0 +1,39 @@
+---
+
+- name: Clean old files
+  shell: "find {{ DATAMODEL_DIRECTORY_BASE }}/ -name {{ PROJECT }}_* -type d -mtime +5 -exec rm -rf {} +"
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+
+- name: Generate random suffix
+  shell: uuidgen | cut -d"-" -f 1
+  run_once: true
+  register: model_suffix
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+
+- name: Create new version of Your data model action
+  file:
+    path: "{{ DATAMODEL_DIRECTORY_BASE }}/{{ PROJECT }}_{{ model_suffix.stdout }}"
+    state: directory
+  register: datamodel_directory
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+
+- name: Copy Configuration to SPARK SERVERS
+  copy:
+    src: "{{ WORKSPACE_DATAMODEL_DIRECTORY }}"
+    dest: "{{ datamodel_directory.path }}"
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+    
+- name: Create executable script for datamodel deployment
+  template:
+    src: "datamodel-{{ MODEL_TYPE }}-deploy.j2" 
+    dest: "{{ datamodel_directory.path }}/model-runner.sh"
+    mode: 0755
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+
+- name: Execute datamodel deployment script
+  shell: "sh {{ datamodel_directory.path }}/model-runner.sh"
+  register: script_datamodel_deployment_output
+  run_once: true
+  failed_when: "'ERROR' in script_datamodel_deployment_output.stderr"
+  
+- debug: msg="{{ script_datamodel_deployment_output.stdout_lines }}"
