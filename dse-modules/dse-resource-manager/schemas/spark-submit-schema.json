@@ -1,0 +1,74 @@
+{
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+      "jarURL": {
+        "$id": "/properties/jarURL",
+        "type": "string",
+        "title": "The Jarurl Schema ",
+        "default": "",
+        "examples": [
+          "dsefs:/everis-spark-training-0.0.1.jar"
+        ]
+      },
+      "driverMemory": {
+        "$id": "/properties/driverMemory",
+        "type": "integer",
+        "title": "The Drivermemory Schema ",
+        "default": 0,
+        "examples": [
+          1024
+        ]
+      },
+      "driverCores": {
+        "$id": "/properties/driverCores",
+        "type": "integer",
+        "title": "The Drivercores Schema ",
+        "default": 0,
+        "examples": [
+          2
+        ]
+      },
+      "supervise": {
+        "$id": "/properties/supervise",
+        "type": "boolean",
+        "title": "The Supervise Schema ",
+        "default": false,
+        "examples": [
+          false
+        ]
+      },
+      "mainClass": {
+        "$id": "/properties/mainClass",
+        "type": "string",
+        "title": "The Mainclass Schema ",
+        "default": "",
+        "examples": [
+          "com.bcp.shcl.spark.demo.App"
+        ]
+      },
+      "jvmArgs": {
+        "$id": "/properties/jvmArgs",
+        "type": "array",
+        "items": {
+          "$id": "/properties/jvmArgs/items",
+          "type": "string",
+          "title": "The 0th Schema ",
+          "default": "",
+          "examples": [
+            "-Dspark.master=dse://?",
+            "-Dspark.submit.deployMode=cluster",
+            "-Dspark.cassandra.auth.username=cassandra",
+            "-Dspark.cassandra.auth.password=cassandra",
+            "-Dspark.hadoop.com.datastax.bdp.fs.client.authentication=basic",
+            "-Dspark.hadoop.com.datastax.bdp.fs.client.authentication.basic.username=cassandra",
+            "-Dspark.hadoop.com.datastax.bdp.fs.client.authentication.basic.password=cassandra",
+            "-Dspark.cassandra.auth.conf.factory=com.datastax.bdp.spark.DseAuthConfFactory",
+            "-Dspark.cassandra.connection.factory=com.datastax.bdp.spark.DseCassandraConnectionFactory"
+          ]
+        }
+      }
+    }
+  }

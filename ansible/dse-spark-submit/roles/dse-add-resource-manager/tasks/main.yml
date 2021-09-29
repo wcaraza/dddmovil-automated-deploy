@@ -1,0 +1,33 @@
+---
+
+- name: Check previous version of DSE RESOURCE MANAGER REMOTE PATH
+  find: 
+    path: "{{ DSE_RESOURCE_MANAGER_REMOTE_PATH }}"
+    patterns: "*"
+  when: "spark_worker_inventory in group_names"
+  register: dse_to_delete
+
+- name: Delete previous version of DSE RESOURCE MANAGER REMOTE PATH
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ dse_to_delete.files }}"
+  when: "spark_worker_inventory in group_names"
+
+- name: Create new version of DSE RESOURCE MANAGER REMOTE PATH
+  file:
+    path: "{{ DSE_RESOURCE_MANAGER_REMOTE_PATH }}"
+    state: directory
+  when: "spark_worker_inventory in group_names"
+
+- name: Export Resource manager PATH
+  copy:
+    src: "{{ DSE_RESOURCE_MANAGER_LOCAL_PATH }}"
+    dest: "{{ DSE_RESOURCE_MANAGER_REMOTE_PATH }}"
+  when: "spark_worker_inventory in group_names"
+
+- name: Run NPM install on remote Host
+  command: npm install
+  args:
+    chdir: "{{ DSE_RESOURCE_MANAGER_REMOTE_PATH }}"
+  when: "spark_worker_inventory in group_names"

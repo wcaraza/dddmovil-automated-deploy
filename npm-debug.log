@@ -1,0 +1,21 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'D:\\node\\node.exe',
+1 verbose cli   'D:\\node\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'run',
+1 verbose cli   'migrate' ]
+2 info using npm@1.4.9
+3 info using node@v10.0.0-rc.0
+4 error Error: ENOENT: no such file or directory, open 'D:\git\bcp-shcl-automated-deploy\package.json'
+5 error If you need help, you may report this *entire* log,
+5 error including the npm and node versions, at:
+5 error     <http://github.com/npm/npm/issues>
+6 error System Windows_NT 6.1.7601
+7 error command "D:\\node\\node.exe" "D:\\node\\node_modules\\npm\\bin\\npm-cli.js" "run" "migrate"
+8 error cwd D:\git\bcp-shcl-automated-deploy
+9 error node -v v10.0.0-rc.0
+10 error npm -v 1.4.9
+11 error path D:\git\bcp-shcl-automated-deploy\package.json
+12 error syscall open
+13 error code ENOENT
+14 error errno -4058
+15 verbose exit [ -4058, true ]

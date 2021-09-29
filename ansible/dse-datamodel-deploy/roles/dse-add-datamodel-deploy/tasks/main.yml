@@ -1,0 +1,14 @@
+---
+
+- name: Export data model deploy PATH
+  copy:
+    src: "{{ DSE_DATA_MODEL_DEPLOYER_LOCAL_PATH }}"
+    dest: "{{ DSE_DATA_MODEL_DEPLOYER_REMOTE_PATH }}"
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+
+- name: Run NPM install on remote Host
+  shell: npm install
+  args:
+    chdir: "{{ DSE_DATA_MODEL_DEPLOYER_REMOTE_PATH }}/dse-datamodel-deploy-{{ MODEL_TYPE }}/"
+  when: "DEPLOY_SCRIPT_INVENTORY in group_names"
+

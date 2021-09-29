@@ -1,0 +1,24 @@
+{
+  "name": "dse-resource-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^6.5.2",
+    "async": "^2.6.1",
+    "cheerio": "^1.0.0-rc.2",
+    "debug": "^3.1.0",
+    "dse-driver": "^1.6.0",
+    "request": "^2.87.0",
+    "sleep": "^5.1.1",
+    "yargs": "^12.0.1"
+  }
+}

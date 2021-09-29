@@ -1,0 +1,105 @@
+---
+
+- name: Delete previous version of Spark Application Directory
+  file:
+    path: '{{ SPARK_APPLICATION_DIRECTORY }}'
+    state: absent
+  when: "spark_worker_inventory in group_names"
+
+- name: Create new version of Spark Application Directory
+  file:
+    path: '{{ SPARK_APPLICATION_DIRECTORY }}'
+    state: directory
+  when: "spark_worker_inventory in group_names"
+
+- name: Delete previous version of Spark Log Directory(DSE logging)
+  file:
+    path: '{{ DSE_LOG_DIR }}'
+    state: absent
+  when: "spark_worker_inventory in group_names"
+
+- name: Delete previous version of Spark Log Directory (logging)
+  file:
+    path: '{{ LOG_DIR }}'
+    state: absent
+  when: "spark_worker_inventory in group_names"
+
+
+- name: Create new version of Spark Log Directory(DSE logging)
+  file:
+    path: '{{ DSE_LOG_DIR }}'
+    state: directory
+    mode: 0755
+    owner: "{{ ansible_user }}"
+  when: "spark_worker_inventory in group_names"
+
+- name: Create new version of Spark Log Directory (logging)
+  file:
+    path: '{{ LOG_DIR }}'
+    state: directory
+    mode: 0755
+    owner: "{{ ansible_user }}"
+  when: "spark_worker_inventory in group_names"
+
+- name: Copy Configuration to SPARK SERVERS
+  copy:
+    src: "{{ WORKSPACE_CONFIG_DIRECTORY }}"
+    dest: "{{ SPARK_APPLICATION_DIRECTORY }}/"
+  when: "spark_worker_inventory in group_names"
+
+- name: Copy Spark submit manifest file
+  copy:
+    src: "{{ SPARK_SUBMIT_MANIFEST_FILE }}"
+    dest: "{{ SPARK_APPLICATION_DIRECTORY }}/"
+  when: "spark_worker_inventory in group_names"
+
+- name: Copy Spark submit environment file
+  copy:
+    src: "{{ SPARK_SUBMIT_ENVIRONMENT_FILE }}"
+    dest: "{{ SPARK_APPLICATION_DIRECTORY }}/"
+  when: "spark_worker_inventory in group_names"
+
+- name: Copy Dependencies to SPARK SERVERS
+  copy:
+    src: "{{ WORKSPACE_DEPENDENCY_DIRECTORY }}.zip"
+    dest: "{{ SPARK_APPLICATION_DIRECTORY }}"
+  when: "spark_worker_inventory in group_names"
+
+- name: Create new version workspace dependency dir
+  file:
+    path: "{{ REMOTE_DEPENDENCY_DIRECTORY }}"
+    state: directory
+  when: "spark_worker_inventory in group_names"
+
+- name: Extract Dependencies to SPARK SERVERS
+  unarchive:
+    src: "{{ REMOTE_DEPENDENCY_DIRECTORY }}.zip"
+    dest: "{{ REMOTE_DEPENDENCY_DIRECTORY }}"
+    remote_src: yes
+  when: 
+    - spark_worker_inventory in group_names
+
+- name: Create new version workspace dependency dir
+  file:
+    path: "{{ SPARK_APPLICATION_DIRECTORY }}/app"
+    state: directory
+  when: "spark_worker_inventory in group_names"
+
+- name: Copy Deploy Jar file to PIVOT SERVER
+  copy:
+    src: "{{ JAR_LOCAL_DIRECTORY }}"
+    dest: "{{ SPARK_APPLICATION_DIRECTORY }}/app/"
+  when: inventory_hostname == groups[spark_worker_inventory][0]
+
+- name: Create DSEFS directory for Application
+  shell: dse -u {{ SPARK_AO_USER_NAME }} -p {{ SPARK_AO_USER_PASS }} fs 'mkdir -p {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/applications'
+  when: inventory_hostname == groups[spark_worker_inventory][0]
+
+- name: Grants to DSEFS directory for Application
+  shell: dse -u {{ SPARK_AO_USER_NAME }} -p {{ SPARK_AO_USER_PASS }} fs 'chown -u {{ SPARK_AP_USER_NAME }} {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}'
+  when: inventory_hostname == groups[spark_worker_inventory][0]
+  
+- name: Index Application Jar into DSEFS
+  shell: dse -u {{ SPARK_AO_USER_NAME }} -p {{ SPARK_AO_USER_PASS }} fs 'cp -o file://{{ SPARK_APPLICATION_DIRECTORY }}/app/{{ ARTIFACT_FULL_NAME }}.jar {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/applications/{{ ARTIFACT_FULL_NAME }}.jar'
+  when: inventory_hostname == groups[spark_worker_inventory][0]
+  register: jar_result

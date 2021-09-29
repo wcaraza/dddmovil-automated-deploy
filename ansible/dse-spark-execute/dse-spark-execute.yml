@@ -1,0 +1,10 @@
+---
+# This playbook execute the given script on spark node.
+
+- name: execute spark submit script on spark node
+  hosts: deploy-script-des
+  user: "{{ ansible_user }}"
+  run_once: true
+  tasks:
+    - name: Execute the script
+      command: "sh {{ script_path }}"

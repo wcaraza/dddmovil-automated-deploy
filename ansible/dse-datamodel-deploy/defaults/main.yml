@@ -1,0 +1,9 @@
+---
+
+DSE_DATA_MODEL_DEPLOYER_REMOTE_PATH: "/opt/datamodel-deploy-{{ MODEL_TYPE }}"
+
+DATAMODEL_DIRECTORY_BASE: "/opt/data-models"
+
+KEY: "/opt/security/shcl-jskey-cloud-{{ENVIRONMENT}}.pem"
+
+CERT: "/opt/security/shcl-jscert-cloud-{{ENVIRONMENT}}.pem"

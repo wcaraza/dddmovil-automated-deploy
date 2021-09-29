@@ -1,0 +1,53 @@
+#!/bin/bash
+
+REMOTE_PATH="{{ DSE_RESOURCE_MANAGER_REMOTE_PATH }}index.js"
+
+MANIFEST="{{ SPARK_SUBMIT_JSON_MANIFEST }}"
+
+SPARK_AP_USER_NAME="{{ SPARK_AP_USER_NAME }}"
+
+SPARK_AP_USER_PASS="{{ SPARK_AP_USER_PASS }}"
+
+HOSTS="{% for x in (groups[spark_worker_inventory]) %}
+{{ x }}{% if not loop.last %},{% endif %}
+{% endfor %}"
+
+CLASSPATH="{{ EXTRA_CLASSPATH }}"
+
+DEPLOY_PATH="{{ SPARK_APPLICATION_DIRECTORY }}"
+
+LOAD_ID="{{ SPARK_APP_FILE_ID }}"
+
+ENVIRONMENT="{{ ENVIRONMENT }}"
+
+KEY="{{ KEY }}"
+
+CERT="{{ CERT }}"
+
+EXTRA_PARAMS="{{ EXTRA_PARAMS }}"
+
+JAR_FILE="{{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/applications/{{ ARTIFACT_FULL_NAME }}.jar"
+
+LOG_DIR="{{ DSE_LOG_DIR }}"
+
+KEYVAULT_NAME="{{ KEYVAULT_NAME }}"
+
+KEYVAULT_PASS="{{ KEYVAULT_PASS }}"
+
+SUPERVISED_LAUNCH="{{ SUPERVISED }}"
+
+DSEFS_DIRECTORY="{{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}"
+
+KILL_ME_FILE="{{ SPARK_APP_FILE_ID }}_kill-me.sh"
+
+ZU_INVOCATION=$(dse -u $SPARK_AP_USER_NAME -p $SPARK_AP_USER_PASS fs 'cat {{ SPARK_DSE_FS_APPLICATION_DIRECTORY }}/{{ SPARK_APP_FILE_ID }}_kill-me.sh' 2>/dev/null)
+
+if [[ ! $? -eq 0 ]]; then
+    echo "KILL-ME FILE DOES NOT EXISTS"
+else
+    echo "[ZU IS RISING]Invoking kill-me file for requested application"
+    eval $ZU_INVOCATION
+fi
+
+DEBUG=* node $REMOTE_PATH --loadId $LOAD_ID --killmeFile $KILL_ME_FILE --dsefsDirectory $DSEFS_DIRECTORY --supervisedLaunch $SUPERVISED_LAUNCH --extraArgs $EXTRA_PARAMS --logDir $LOG_DIR --key $KEY --cert $CERT --environment $ENVIRONMENT --keyVaultAppSecret $KEYVAULT_PASS --submitFile $MANIFEST --u $SPARK_AP_USER_NAME --p $SPARK_AP_USER_PASS --h $HOSTS --classpath $CLASSPATH --deployPath $DEPLOY_PATH  --jarFile $JAR_FILE
+
